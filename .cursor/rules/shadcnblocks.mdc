@@ -1,0 +1,596 @@
+---
+description: Complete workflow for integrating shadcnblocks.com components into the Sanity-powered application
+globs: **/*.{ts,tsx,js,jsx}
+alwaysApply: false
+---
+
+## Integrating shadcnblocks.com Components
+
+> **Note:** This workflow creates ONLY the schema, queries, and React components. Do NOT create dummy content/NDJSON files unless the user explicitly requests it separately.
+
+When the user provides a new component from shadcnblocks.com (React code + screenshot), follow this complete workflow to integrate it into the application.
+
+### What the User Provides
+
+1. **Screenshot** of the component from shadcnblocks.com
+2. **React code** for the component
+3. **Component documentation** showing props and their types
+4. **(Optional)** Specific instructions about which document types to add it to
+
+---
+
+## Creating Custom Components (Without shadcnblocks.com Model)
+
+When the user requests a new component but doesn't provide code/screenshots from shadcnblocks.com, follow this workflow to create a custom component that matches existing patterns.
+
+### Standard Component Structure
+
+All custom components MUST follow this exact pattern:
+
+**Header Section (Centered, Max Width 48rem):**
+
+```tsx
+<div className="mb-8 md:mb-12 lg:mb-16 max-w-[48rem] text-center mx-auto">
+  <div className={cn(color === 'primary' ? 'text-background' : undefined)}>
+    {tagLine && (
+      <h1 className="leading-[0] mb-4">
+        <span className="text-base font-semibold">{tagLine}</span>
+      </h1>
+    )}
+    {title && <h2 className="text-3xl md:text-5xl mb-4">{title}</h2>}
+  </div>
+  {description && <p>{description}</p>}
+</div>
+```
+
+**Content Section:** Component-specific implementation (full width)
+
+### Required Standard Fields
+
+Schema fields in this exact order:
+
+```typescript
+defineField({ name: 'padding', type: 'section-padding' }),
+defineField({ name: 'colorVariant', type: 'color-variant' }),
+defineField({ name: 'tagLine', type: 'string' }), // Optional
+defineField({ name: 'title', type: 'string' }), // Optional
+defineField({ name: 'description', type: 'text' }), // Optional
+// ... component-specific fields
+```
+
+### Key Rules for Custom Components
+
+- **tagLine, title, description** - ALL optional unless component truly requires them
+- **NO mandatory validation** on text/image fields unless critical for functionality
+- **Header styling**: `max-w-[48rem] text-center mx-auto`
+- **TagLine**: `<h1 className="leading-[0] mb-4"><span className="text-base font-semibold">`
+- **Title**: `<h2 className="text-3xl md:text-5xl mb-4">`
+- **Color-aware**: `cn(color === 'primary' ? 'text-background' : undefined)`
+- **Spacing**: `mb-8 md:mb-12 lg:mb-16` for header bottom margin
+
+### Common Patterns
+
+- **Gallery/Grid**: Configurable columns (`grid-cols-2/3/4`) and spacing (`gap-2/4/6/8`)
+- **Lightbox**: Install library (`pnpm add yet-another-react-lightbox`), use `'use client'`
+- **Interactive**: Use `'use client'` directive, manage state with hooks
+- **References**: Use `type: 'reference'` in schema, query with `items[]->{...fields}`
+
+---
+
+## Workflow Overview
+
+The integration process requires **5 main steps** in this order:
+
+1. **Create Schema Files** (Sanity Studio)
+2. **Register Schema Types** (schema.ts)
+3. **Create Query Files** (GROQ queries)
+4. **Create React Components** (Front-end)
+5. **Wire Everything Together** (index files)
+
+---
+
+## Step 1: Create Schema Files
+
+### Analyze Component Structure
+
+Determine:
+
+- **Parent block** (contains child components) or **standalone block**?
+- What fields are present? (text, images, links, arrays)
+- Visual customization options? (colors, padding, layout variants)
+- Required vs optional props from documentation
+- Array props → decide **inline items** (simple, 2-3 fields) or **reusable items** (complex, used in multiple places)
+
+### Create Schema File(s)
+
+**Location Pattern:**
+
+- Parent blocks: `/sanity/schemas/blocks/{category}/{component-name}.ts`
+- Child components: `/sanity/schemas/blocks/{category}/{child-name}.ts`
+- Standalone blocks: `/sanity/schemas/blocks/{component-name}.ts`
+
+**Categories:** hero, grid, split, carousel, timeline, cta, logo-cloud, forms, gallery
+
+**Reference Examples:**
+
+- Standalone: `/sanity/schemas/blocks/gallery/gallery-lightbox.ts`
+- Parent-child: `/sanity/schemas/blocks/grid/grid-row.ts` + `/sanity/schemas/blocks/grid/grid-card.ts`
+- With inline items: `/sanity/schemas/blocks/faqs.ts`
+
+**Critical Schema Rules:**
+
+```typescript
+// ALWAYS use these helpers
+import { defineField, defineType } from 'sanity';
+import { IconName } from 'lucide-react';
+
+export default defineType({
+  name: 'component-name', // kebab-case, matches filename
+  type: 'object',
+  title: 'Component Name',
+  description: 'Brief description',
+  icon: IconName, // ALWAYS include
+  fields: [
+    // Standard fields first (if needed):
+    defineField({ name: 'padding', type: 'section-padding' }),
+    defineField({ name: 'colorVariant', type: 'color-variant' }),
+    defineField({ name: 'tagLine', type: 'string' }),
+    defineField({ name: 'title', type: 'string' }),
+    defineField({ name: 'description', type: 'text' }),
+
+    // Component-specific fields
+    defineField({
+      name: 'image',
+      type: 'image',
+      options: { hotspot: true }, // ALWAYS for images
+      fields: [{ name: 'alt', type: 'string' }],
+    }),
+
+    // Arrays for repeating items
+    defineField({
+      name: 'items',
+      type: 'array',
+      of: [{ type: 'object', fields: [...] }], // Inline
+      // OR
+      of: [{ type: 'reference', to: [{ type: 'document-name' }] }], // Reference
+    }),
+
+    // Enums
+    defineField({
+      name: 'variant',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Option 1', value: 'value-1' },
+          { title: 'Option 2', value: 'value-2' },
+        ],
+        layout: 'radio', // If < 5 options
+      },
+      initialValue: 'value-1',
+    }),
+  ],
+  preview: {
+    select: { title: 'title' },
+    prepare({ title }) {
+      return {
+        title: 'Component Name',
+        subtitle: title || 'No Title',
+      };
+    },
+  },
+});
+```
+
+**Field Type Quick Reference:**
+
+- Text → `string` or `text` (multi-line)
+- Rich text → `block-content`
+- Images → `image` with `options: { hotspot: true }`
+- Links/Buttons → `link` (handles internal/external)
+- Multiple links → `array` of `link`
+- Boolean → `boolean` with `initialValue`
+- Enums → `string` with `options.list`
+
+---
+
+## Step 2: Register Schema Types
+
+### Import in `/sanity/schema.ts`
+
+```typescript
+import galleryLightbox from './schemas/blocks/gallery/gallery-lightbox';
+
+export const schema: { types: SchemaTypeDefinition[] } = {
+  types: [
+    // ... existing types
+    galleryLightbox,
+  ],
+};
+```
+
+### Add to `/sanity/schemas/documents/page.ts`
+
+```typescript
+defineField({
+  name: "blocks",
+  type: "array",
+  of: [
+    // ... existing blocks
+    { type: "gallery-lightbox" },
+  ],
+  options: {
+    insertMenu: {
+      groups: [
+        // ... existing groups
+        {
+          name: "gallery",
+          title: "Gallery",
+          of: ["gallery-lightbox"],
+        },
+      ],
+      views: [
+        {
+          name: "grid",
+          previewImageUrl: (block) => `/sanity/preview/${block}.jpg`,
+        },
+        { name: "list" },
+      ],
+    },
+  },
+}),
+```
+
+---
+
+## Step 3: Create Query Files
+
+### Create Query Fragment
+
+**Location Pattern:**
+
+- Parent blocks: `/sanity/queries/{category}/{component-name}.ts`
+- Child components: `/sanity/queries/{category}/{child-name}.ts`
+- Standalone blocks: `/sanity/queries/{component-name}.ts`
+
+**Reference Examples:**
+
+- Standalone: `/sanity/queries/gallery/gallery-lightbox.ts`
+- Parent: `/sanity/queries/grid/grid-row.ts`
+- Child: `/sanity/queries/grid/grid-card.ts`
+
+**Query Pattern:**
+
+```typescript
+import { groq } from 'next-sanity';
+import { linkQuery } from '../shared/link';
+import { imageQuery } from '../shared/image';
+import { bodyQuery } from '../shared/body';
+
+// @sanity-typegen-ignore
+export const componentNameQuery = groq`
+  _type == "component-name" => {
+    _type,
+    _key,
+    padding,
+    colorVariant,
+    tagLine,
+    title,
+    description,
+    image{
+      ${imageQuery}
+    },
+    link{
+      ${linkQuery}
+    },
+    items[]{
+      ${childItemQuery} // For parent-child
+    },
+  }
+`;
+```
+
+**Critical Rules:**
+
+- ALWAYS use `groq` tag from "next-sanity"
+- ALWAYS include `_type` and `_key`
+- ALWAYS add `// @sanity-typegen-ignore` comment
+- Use shared fragments: `linkQuery`, `imageQuery`, `bodyQuery`
+- Query every field defined in schema
+
+### Update `/sanity/queries/page.ts`
+
+```typescript
+import { galleryLightboxQuery } from './gallery/gallery-lightbox';
+
+export const PAGE_QUERY = groq`
+  *[_type == "page" && slug.current == $slug][0]{
+    blocks[]{
+      // ... existing queries
+      ${galleryLightboxQuery},
+    },
+    // ... rest
+  }
+`;
+```
+
+---
+
+## Step 4: Create React Components
+
+### Create Component File(s)
+
+**Location Pattern:**
+
+- Parent blocks: `/components/blocks/{category}/{component-name}.tsx`
+- Child components: `/components/blocks/{category}/{child-name}.tsx`
+- Standalone blocks: `/components/blocks/{component-name}.tsx`
+
+**Reference Examples:**
+
+- Standalone: `/components/blocks/gallery/gallery-lightbox.tsx`
+- Parent: `/components/blocks/grid/grid-row.tsx`
+- Child: `/components/blocks/grid/grid-card.tsx`
+- Custom header: `/components/blocks/section-header.tsx`, `/components/blocks/cta/cta-1.tsx`
+
+**Component Pattern:**
+
+```tsx
+import { PAGE_QUERYResult } from '@/sanity.types';
+import { stegaClean } from 'next-sanity';
+import { cn } from '@/lib/utils';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import SectionContainer from '@/components/ui/section-container';
+import { urlFor } from '@/sanity/lib/image';
+import PortableTextRenderer from '@/components/portable-text-renderer';
+
+type Block = NonNullable<NonNullable<PAGE_QUERYResult>['blocks']>[number];
+type ComponentName = Extract<Block, { _type: 'component-name' }>;
+
+export default function ComponentName({
+  padding,
+  colorVariant,
+  tagLine,
+  title,
+  description,
+  // ... other props
+}: ComponentName) {
+  const color = stegaClean(colorVariant);
+
+  return (
+    <SectionContainer color={color} padding={padding}>
+      {/* Standard header (for custom components) */}
+      <div className="mb-8 md:mb-12 lg:mb-16 max-w-[48rem] text-center mx-auto">
+        <div
+          className={cn(color === 'primary' ? 'text-background' : undefined)}
+        >
+          {tagLine && (
+            <h1 className="leading-[0] mb-4">
+              <span className="text-base font-semibold">{tagLine}</span>
+            </h1>
+          )}
+          {title && <h2 className="text-3xl md:text-5xl mb-4">{title}</h2>}
+        </div>
+        {description && <p>{description}</p>}
+      </div>
+
+      {/* Component-specific content */}
+      <div className="...">
+        {/* Replace with shadcnblocks code or custom implementation */}
+      </div>
+    </SectionContainer>
+  );
+}
+```
+
+**Critical Patterns:**
+
+**Images:**
+
+```tsx
+{
+  image && image.asset?._id && (
+    <Image
+      src={urlFor(image).url()}
+      alt={image.alt || ''}
+      width={image.asset?.metadata?.dimensions?.width || 800}
+      height={image.asset?.metadata?.dimensions?.height || 800}
+      placeholder={image?.asset?.metadata?.lqip ? 'blur' : undefined}
+      blurDataURL={image?.asset?.metadata?.lqip || ''}
+      quality={100}
+    />
+  );
+}
+```
+
+**Links/Buttons:**
+
+```tsx
+{
+  link?.href && (
+    <Button variant={stegaClean(link?.buttonVariant)} asChild>
+      <Link href={link.href} target={link.target ? '_blank' : undefined}>
+        {link.title}
+      </Link>
+    </Button>
+  );
+}
+```
+
+**Parent-Child componentMap:**
+
+```tsx
+const componentMap: {
+  [K in ChildType['_type']]: React.ComponentType<
+    Extract<ChildType, { _type: K }>
+  >;
+} = {
+  'child-type-1': ChildComponent1,
+  'child-type-2': ChildComponent2,
+};
+
+// In render:
+{
+  children.map((child) => {
+    const Component = componentMap[child._type];
+    return <Component {...(child as any)} key={child._key} />;
+  });
+}
+```
+
+**Critical Rules:**
+
+- ALWAYS extract types from `PAGE_QUERYResult`
+- ALWAYS use `stegaClean()` for enum values
+- NEVER hardcode content - use props from Sanity
+- Wrap top-level blocks in `SectionContainer`
+- Use `urlFor()` for image URLs
+- Include proper null checks
+
+---
+
+## Step 5: Wire Everything Together
+
+### Update `/components/blocks/index.tsx`
+
+```typescript
+import GalleryLightbox from '@/components/blocks/gallery/gallery-lightbox';
+
+const componentMap: {
+  [K in Block['_type']]: React.ComponentType<Extract<Block, { _type: K }>>;
+} = {
+  // ... existing
+  'gallery-lightbox': GalleryLightbox,
+};
+```
+
+### Create Preview Image
+
+**Location:** `/public/sanity/preview/{component-name}.jpg`
+
+**Critical:**
+
+- Name MUST match schema `name` field exactly (kebab-case)
+- Format: JPEG (`.jpg`)
+- Dimensions: ~800x600px
+- Size: < 200KB
+- Shows component with sample content
+
+**For parent-child:** Create preview image for EACH child component too
+
+### Generate Types
+
+```bash
+pnpm typegen
+```
+
+This runs:
+
+1. `rm -rf schema.json`
+2. `sanity schema extract`
+3. `sanity typegen generate`
+
+### Verify
+
+**In Sanity Studio:**
+
+1. Navigate to `/studio`
+2. Open a page
+3. Add your component
+4. Fill in fields
+5. Publish
+
+**In Front-end:**
+
+1. Navigate to the page
+2. Verify rendering
+3. Test responsive behavior
+
+---
+
+## Quick Reference
+
+### Available Shared Types
+
+- `section-padding` - top/bottom padding toggles
+- `color-variant` - background color variants
+- `button-variant` - button style variants
+- `link` - internal/external link with button variant
+- `block-content` - portable text (rich text)
+
+### Available Query Fragments
+
+- `linkQuery` - internal/external link resolution
+- `imageQuery` - image with metadata, lqip, dimensions
+- `bodyQuery` - portable text with nested content
+
+### Available UI Components
+
+- `SectionContainer` - wrapper with padding and color
+- `PortableTextRenderer` - renders portable text
+- `Button` - shadcn/ui button
+- `Card`, `Badge`, `Accordion` - shadcn/ui components
+
+### Helper Functions
+
+- `urlFor(image)` - generates optimized image URL
+- `stegaClean(value)` - cleans Sanity encoded values
+- `cn(...classes)` - conditional className utility
+
+---
+
+## Checklist
+
+### Schema Layer
+
+- [ ] Created schema file in `/sanity/schemas/blocks/{category}/`
+- [ ] Included icon and preview
+- [ ] Used standard fields (padding, colorVariant, tagLine, title, description)
+- [ ] Registered in `/sanity/schema.ts`
+- [ ] Added to page schema blocks array
+- [ ] Added to insertMenu groups
+
+### Query Layer
+
+- [ ] Created query file in `/sanity/queries/{category}/`
+- [ ] Used `groq` tag and `@sanity-typegen-ignore`
+- [ ] Included `_type` and `_key`
+- [ ] Used shared query fragments
+- [ ] Updated PAGE_QUERY
+
+### Component Layer
+
+- [ ] Created component file in `/components/blocks/{category}/`
+- [ ] Extracted types from PAGE_QUERYResult
+- [ ] Wrapped in SectionContainer
+- [ ] Used stegaClean for enums
+- [ ] Replaced hardcoded content with props
+- [ ] Added null checks
+
+### Integration Layer
+
+- [ ] Updated `/components/blocks/index.tsx` componentMap
+- [ ] Created preview image: `/public/sanity/preview/{name}.jpg`
+- [ ] Ran `pnpm typegen`
+- [ ] Tested in Sanity Studio
+- [ ] Tested on front-end
+- [ ] Verified responsive behavior
+
+---
+
+## When to Ask vs Execute
+
+**Ask when:**
+
+- Component structure is ambiguous
+- Multiple valid implementations exist
+- Need clarification on document types
+- Unsure about field types
+
+**Execute immediately when:**
+
+- Component structure is clear
+- All necessary information provided
+- Following established patterns
+- Standard integration workflow

@@ -6,6 +6,7 @@ import SplitContent from './split-content';
 import SplitCardsList from './split-cards-list';
 import SplitImage from './split-image';
 import SplitInfoList from './split-info-list';
+import SplitOffering from './split-offering';
 
 type Block = NonNullable<NonNullable<PAGE_QUERYResult>['blocks']>[number];
 type SplitRow = Extract<Block, { _type: 'split-row' }>;
@@ -20,6 +21,7 @@ const componentMap: {
   'split-cards-list': SplitCardsList,
   'split-image': SplitImage,
   'split-info-list': SplitInfoList,
+  'split-offering': SplitOffering,
 };
 
 export default function SplitRow({

@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 type ProjectHeroProps = {
   title: NonNullable<PROJECT_QUERYResult>['title'];
+  subtitle: NonNullable<PROJECT_QUERYResult>['subtitle'];
   excerpt: NonNullable<PROJECT_QUERYResult>['excerpt'];
   image: NonNullable<PROJECT_QUERYResult>['image'];
   categories: NonNullable<PROJECT_QUERYResult>['categories'];
@@ -12,6 +13,7 @@ type ProjectHeroProps = {
 
 export default function ProjectHero({
   title,
+  subtitle,
   excerpt,
   image,
   categories,
@@ -37,6 +39,13 @@ export default function ProjectHero({
         <h1 className="mb-4 text-4xl font-bold text-white md:text-5xl lg:text-6xl xl:text-7xl">
           {title}
         </h1>
+
+        {/* Subtitle */}
+        {subtitle && (
+          <p className="mb-6 text-xl text-white/80 md:text-2xl lg:text-3xl">
+            {subtitle}
+          </p>
+        )}
 
         {/* Excerpt */}
         {excerpt && (

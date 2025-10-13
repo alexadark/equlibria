@@ -12,6 +12,7 @@ import {
   PROJECTS_QUERY,
   PROJECTS_SLUGS_QUERY,
 } from '@/sanity/queries/project';
+import { PROJECTS_PAGE_QUERY } from '@/sanity/queries/projects-page';
 import {
   CATEGORY_QUERY,
   CATEGORIES_SLUGS_QUERY,
@@ -25,6 +26,7 @@ import {
   PROJECT_QUERYResult,
   PROJECTS_QUERYResult,
   PROJECTS_SLUGS_QUERYResult,
+  PROJECTS_PAGE_QUERYResult,
   CATEGORY_QUERYResult,
   CATEGORIES_SLUGS_QUERYResult,
   NAVIGATION_QUERYResult,
@@ -131,6 +133,15 @@ export const fetchSanityProjectsStaticParams =
       query: PROJECTS_SLUGS_QUERY,
       perspective: 'published',
       stega: false,
+    });
+
+    return data;
+  };
+
+export const fetchSanityProjectsPage =
+  async (): Promise<PROJECTS_PAGE_QUERYResult> => {
+    const { data } = await sanityFetch({
+      query: PROJECTS_PAGE_QUERY,
     });
 
     return data;

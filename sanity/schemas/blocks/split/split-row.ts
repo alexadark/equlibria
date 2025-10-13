@@ -39,6 +39,7 @@ export default defineType({
         { type: 'split-cards-list' },
         { type: 'split-image' },
         { type: 'split-info-list' },
+        { type: 'split-offering' },
       ],
       validation: (rule) => rule.max(2),
       options: {

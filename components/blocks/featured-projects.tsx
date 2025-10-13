@@ -64,7 +64,7 @@ export default function FeaturedProjects({
             <Link
               key={project?.slug?.current}
               className="flex w-full rounded-3xl ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              href={`/projects/${project?.slug?.current}`}
+              href={`/offerings/${project?.slug?.current}`}
             >
               <ProjectCard
                 title={project?.title ?? ''}
@@ -82,8 +82,8 @@ export default function FeaturedProjects({
               variant={stegaClean(viewAllButtonVariant) || 'default'}
               asChild
             >
-              <Link href="/projects">
-                {viewAllButtonText || 'View All Projects'}
+              <Link href="/offerings">
+                {viewAllButtonText || 'View All Offerings'}
               </Link>
             </Button>
           </div>

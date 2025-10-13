@@ -72,7 +72,7 @@ export default function ProjectCard({
         {excerpt && <p>{excerpt}</p>}
       </div>
       <Button className="mt-6" size="lg" variant="default" asChild>
-        <div>View project</div>
+        <div>View offering</div>
       </Button>
     </div>
   );

@@ -46,6 +46,13 @@ export default defineType({
         Rule.required().error('Slug is required for the project URL'),
     }),
     defineField({
+      name: 'subtitle',
+      title: 'Subtitle',
+      type: 'string',
+      group: 'content',
+      description: 'Appears below the title',
+    }),
+    defineField({
       name: 'excerpt',
       title: 'Excerpt',
       type: 'text',
@@ -62,6 +69,84 @@ export default defineType({
       },
       fields: [altTextField],
       validation: (Rule) => Rule.required().error('Featured image is required'),
+    }),
+    defineField({
+      name: 'aboutTitle',
+      title: 'About Title',
+      type: 'string',
+      group: 'content',
+      description: 'Title for the about section',
+    }),
+    defineField({
+      name: 'aboutText',
+      title: 'About Text',
+      type: 'text',
+      group: 'content',
+      description: 'Description text for the about section',
+      rows: 4,
+    }),
+    defineField({
+      name: 'steps',
+      title: 'Steps',
+      type: 'array',
+      group: 'content',
+      of: [
+        {
+          type: 'object',
+          name: 'step',
+          fields: [
+            defineField({
+              name: 'title',
+              title: 'Title',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'content',
+              title: 'Content',
+              type: 'block-content',
+            }),
+          ],
+          preview: {
+            select: {
+              title: 'title',
+            },
+            prepare({ title }) {
+              return {
+                title: title || 'Untitled Step',
+              };
+            },
+          },
+        },
+      ],
+    }),
+    defineField({
+      name: 'buyNowUrl',
+      title: 'Investment URL',
+      type: 'url',
+      group: 'content',
+      description: 'External link for the investment/purchase button',
+    }),
+    defineField({
+      name: 'expiresDate',
+      title: 'Expires Date',
+      type: 'string',
+      group: 'content',
+      description: 'e.g. "October 2025"',
+    }),
+    defineField({
+      name: 'regulationType',
+      title: 'Regulation Type',
+      type: 'string',
+      group: 'content',
+      description: 'e.g. "Reg A+", "Reg D 506(c)"',
+    }),
+    defineField({
+      name: 'budget',
+      title: 'Budget',
+      type: 'string',
+      group: 'content',
+      description: 'e.g. "100M Budget", "$25M Series A"',
     }),
     defineField({
       name: 'categories',

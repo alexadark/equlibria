@@ -11,11 +11,22 @@ import { imageQuery } from './shared/image';
 
 export const PROJECT_QUERY = groq`*[_type == "project" && slug.current == $slug][0]{
     title,
+    subtitle,
     slug,
     excerpt,
     image{
       ${imageQuery}
     },
+    aboutTitle,
+    aboutText,
+    steps[]{
+      title,
+      content
+    },
+    buyNowUrl,
+    expiresDate,
+    regulationType,
+    budget,
     blocks[]{
       ${hero1Query},
       ${sectionHeaderQuery},

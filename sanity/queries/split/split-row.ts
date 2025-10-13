@@ -3,6 +3,7 @@ import { splitContentQuery } from './split-content';
 import { splitCardsListQuery } from './split-cards-list';
 import { splitImageQuery } from './split-image';
 import { splitInfoListQuery } from './split-info-list';
+import { splitOfferingQuery } from './split-offering';
 
 // @sanity-typegen-ignore
 export const splitRowQuery = groq`
@@ -18,6 +19,7 @@ export const splitRowQuery = groq`
       ${splitCardsListQuery},
       ${splitImageQuery},
       ${splitInfoListQuery},
+      ${splitOfferingQuery},
     },
   }
 `;

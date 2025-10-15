@@ -40,6 +40,7 @@ export default defineType({
         { type: 'split-image' },
         { type: 'split-info-list' },
         { type: 'split-offering' },
+        { type: 'split-project' },
       ],
       validation: (rule) => rule.max(2),
       options: {

@@ -7,6 +7,7 @@ import SplitCardsList from './split-cards-list';
 import SplitImage from './split-image';
 import SplitInfoList from './split-info-list';
 import SplitOffering from './split-offering';
+import SplitProject from './split-project';
 
 type Block = NonNullable<NonNullable<PAGE_QUERYResult>['blocks']>[number];
 type SplitRow = Extract<Block, { _type: 'split-row' }>;
@@ -22,6 +23,7 @@ const componentMap: {
   'split-image': SplitImage,
   'split-info-list': SplitInfoList,
   'split-offering': SplitOffering,
+  'split-project': SplitProject,
 };
 
 export default function SplitRow({
@@ -33,6 +35,38 @@ export default function SplitRow({
 }: SplitRow) {
   const color = stegaClean(colorVariant);
   const isSingleColumn = splitColumns?.length === 1;
+
+  const hasSplitProject = splitColumns?.some(
+    (col) => col._type === 'split-project'
+  );
+
+  // For full-width split-project, render without any wrapper
+  if (fullWidth && hasSplitProject) {
+    return (
+      <>
+        {splitColumns?.map((column) => {
+          const Component = componentMap[column._type];
+          if (!Component) {
+            console.warn(
+              `No component implemented for split column type: ${column._type}`
+            );
+            return <div data-type={column._type} key={column._key} />;
+          }
+
+          return (
+            <Component
+              {...(column as any)}
+              color={color}
+              noGap={noGap}
+              fullWidth={fullWidth}
+              isSingleColumn={isSingleColumn}
+              key={column._key}
+            />
+          );
+        })}
+      </>
+    );
+  }
 
   const content = splitColumns && splitColumns?.length > 0 && (
     <div
@@ -52,6 +86,7 @@ export default function SplitRow({
           );
           return <div data-type={column._type} key={column._key} />;
         }
+
         return (
           <Component
             {...(column as any)}
@@ -75,7 +110,9 @@ export default function SplitRow({
           padding?.bottom ? 'pb-16 xl:pb-20' : undefined
         )}
       >
-        {content}
+        <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
+          {content}
+        </div>
       </div>
     );
   }

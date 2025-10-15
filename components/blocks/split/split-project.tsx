@@ -72,26 +72,26 @@ export default function SplitProject({
       {/* Overlay metadata tags */}
       <div className="absolute bottom-6 left-6 right-6 flex flex-wrap gap-2">
         {project.categories && project.categories.length > 0 && (
-          <div className="bg-black/80 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-1.5">
-            <MapPin className="w-3 h-3" />
+          <div className="bg-black/80 backdrop-blur-sm text-white px-4 py-2 rounded-full text-base font-medium flex items-center gap-2">
+            <MapPin className="w-4 h-4" />
             {project.categories[0].title}
           </div>
         )}
         {project.expiresDate && (
-          <div className="bg-black/80 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-1.5">
-            <Calendar className="w-3 h-3" />
+          <div className="bg-black/80 backdrop-blur-sm text-white px-4 py-2 rounded-full text-base font-medium flex items-center gap-2">
+            <Calendar className="w-4 h-4" />
             {project.expiresDate}
           </div>
         )}
         {project.regulationType && (
-          <div className="bg-black/80 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-1.5">
-            <Sparkles className="w-3 h-3" />
+          <div className="bg-black/80 backdrop-blur-sm text-white px-4 py-2 rounded-full text-base font-medium flex items-center gap-2">
+            <Sparkles className="w-4 h-4" />
             {project.regulationType}
           </div>
         )}
         {project.budget && (
-          <div className="bg-black/80 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-sm font-medium flex items-center gap-1.5">
-            <Banknote className="w-3 h-3" />
+          <div className="bg-black/80 backdrop-blur-sm text-white px-4 py-2 rounded-full text-base font-medium flex items-center gap-2">
+            <Banknote className="w-4 h-4" />
             {project.budget}
           </div>
         )}
@@ -105,12 +105,14 @@ export default function SplitProject({
         'flex flex-col justify-center',
         fullWidth
           ? 'h-screen min-h-[600px] px-12 lg:px-16 xl:px-24 bg-background'
-          : 'px-6 py-8'
+          : 'px-6 py-8',
+        // Text alignment based on image position
+        isImageLeft ? 'text-right items-end' : 'text-left items-start'
       )}
     >
       <div className="space-y-6 max-w-xl">
         {displayTitle && (
-          <h2 className="text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
+          <h2 className="text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight">
             {displayTitle}
           </h2>
         )}

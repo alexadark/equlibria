@@ -200,6 +200,24 @@ export default defineType({
       description: 'e.g., "$10,000"',
     }),
     defineField({
+      name: 'geography',
+      title: 'Geography',
+      type: 'string',
+      group: 'investment',
+      description: 'Geographic location or market for this offering',
+      options: {
+        list: [
+          { title: 'United States', value: 'us' },
+          { title: 'Europe', value: 'europe' },
+          { title: 'Asia Pacific', value: 'apac' },
+          { title: 'Latin America', value: 'latam' },
+          { title: 'Middle East & Africa', value: 'mea' },
+          { title: 'Global', value: 'global' },
+        ],
+        layout: 'dropdown',
+      },
+    }),
+    defineField({
       name: 'status',
       title: 'Offering Status',
       type: 'string',

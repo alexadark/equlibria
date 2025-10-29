@@ -98,6 +98,7 @@ export const OFFERINGS_QUERY = groq`*[_type == "offering" && defined(slug)] | or
   regulationType,
   projectedReturns,
   minimumInvestment,
+  geography,
   status,
 }`;
 

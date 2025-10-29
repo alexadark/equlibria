@@ -18,4 +18,7 @@ export const OFFERINGS_BY_INDUSTRY_QUERY = groq`*[_type == "offering" && defined
   },
   valuation,
   regulationType,
+  minimumInvestment,
+  geography,
+  status,
 }`;

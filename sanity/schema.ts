@@ -56,6 +56,7 @@ import newsletter from './schemas/blocks/forms/newsletter';
 import allPosts from './schemas/blocks/all-posts';
 import featuredProjects from './schemas/blocks/featured-projects';
 import featuredOfferings from './schemas/blocks/featured-offerings';
+import featuredIndustries from './schemas/blocks/featured-industries';
 import galleryLightbox from './schemas/blocks/gallery/gallery-lightbox';
 import featuresCards from './schemas/blocks/features/features-cards';
 import featuresCard from './schemas/blocks/features/features-card';
@@ -123,6 +124,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     allPosts,
     featuredProjects,
     featuredOfferings,
+    featuredIndustries,
     galleryLightbox,
     featuresCards,
     featuresCard,

@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import Link from 'next/link';
 
 export async function generateStaticParams() {
   const offerings = await fetchSanityOfferingsStaticParams();
@@ -94,13 +95,17 @@ export default async function OfferingPage(props: {
             {offering.industries && offering.industries.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {offering.industries.map((industry) => (
-                  <Badge
+                  <Link
                     key={industry?.slug?.current}
-                    variant="secondary"
-                    className="text-sm"
+                    href={`/industries/${industry?.slug?.current}`}
                   >
-                    {industry?.title}
-                  </Badge>
+                    <Badge
+                      variant="secondary"
+                      className="cursor-pointer text-sm transition-colors hover:bg-secondary/80"
+                    >
+                      {industry?.title}
+                    </Badge>
+                  </Link>
                 ))}
               </div>
             )}

@@ -3,6 +3,7 @@ import { imageQuery } from './shared/image';
 
 // Single industry query
 export const INDUSTRY_QUERY = groq`*[_type == "industry" && slug.current == $slug][0]{
+  _id,
   title,
   slug,
   description,

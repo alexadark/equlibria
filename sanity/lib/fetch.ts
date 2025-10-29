@@ -27,6 +27,7 @@ import {
   OFFERINGS_QUERY,
   OFFERINGS_SLUGS_QUERY,
 } from '@/sanity/queries/offering';
+import { OFFERINGS_BY_INDUSTRY_QUERY } from '@/sanity/queries/offerings-by-industry';
 import {
   PAGE_QUERYResult,
   PAGES_SLUGS_QUERYResult,
@@ -45,6 +46,7 @@ import {
   OFFERING_QUERYResult,
   OFFERINGS_QUERYResult,
   OFFERINGS_SLUGS_QUERYResult,
+  OFFERINGS_BY_INDUSTRY_QUERYResult,
   NAVIGATION_QUERYResult,
   SETTINGS_QUERYResult,
 } from '@/sanity.types';
@@ -252,3 +254,16 @@ export const fetchSanityOfferingsStaticParams =
 
     return data;
   };
+
+export const fetchSanityOfferingsByIndustry = async ({
+  industryId,
+}: {
+  industryId: string;
+}): Promise<OFFERINGS_BY_INDUSTRY_QUERYResult> => {
+  const { data } = await sanityFetch({
+    query: OFFERINGS_BY_INDUSTRY_QUERY,
+    params: { industryId },
+  });
+
+  return data;
+};

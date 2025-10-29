@@ -16,6 +16,7 @@ import FAQs from '@/components/blocks/faqs';
 import FormNewsletter from '@/components/blocks/forms/newsletter';
 import AllPosts from '@/components/blocks/all-posts';
 import FeaturedProjects from '@/components/blocks/featured-projects';
+import FeaturedOfferings from '@/components/blocks/featured-offerings';
 import GalleryLightbox from '@/components/blocks/gallery/gallery-lightbox';
 import FeaturesCards from '@/components/blocks/features/features-cards';
 import Team1 from '@/components/blocks/team/team-1';
@@ -45,6 +46,7 @@ const componentMap: {
   'form-newsletter': FormNewsletter,
   'all-posts': AllPosts,
   'featured-projects': FeaturedProjects,
+  'featured-offerings': FeaturedOfferings,
   'gallery-lightbox': GalleryLightbox,
   'features-cards': FeaturesCards,
   'team-1': Team1,

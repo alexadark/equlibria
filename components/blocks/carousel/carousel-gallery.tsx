@@ -16,6 +16,7 @@ import {
 import SectionContainer from '@/components/ui/section-container';
 import { urlFor } from '@/sanity/lib/image';
 import { PAGE_QUERYResult } from '@/sanity.types';
+import { cn } from '@/lib/utils';
 
 type Block = NonNullable<NonNullable<PAGE_QUERYResult>['blocks']>[number];
 type CarouselGallery = Extract<Block, { _type: 'carousel-gallery' }>;

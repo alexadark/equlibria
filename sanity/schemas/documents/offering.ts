@@ -193,6 +193,29 @@ export default defineType({
       description: 'e.g., "8-12% annually"',
     }),
     defineField({
+      name: 'minimumInvestment',
+      title: 'Minimum Investment',
+      type: 'string',
+      group: 'investment',
+      description: 'e.g., "$10,000"',
+    }),
+    defineField({
+      name: 'status',
+      title: 'Offering Status',
+      type: 'string',
+      group: 'investment',
+      options: {
+        list: [
+          { title: 'Open', value: 'open' },
+          { title: 'Secondary', value: 'secondary' },
+          { title: 'Closed', value: 'closed' },
+          { title: 'Coming Soon', value: 'coming-soon' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'open',
+    }),
+    defineField({
       name: 'investorDocuments',
       title: 'Investor Documents (Private)',
       type: 'array',

@@ -30,6 +30,8 @@ export const OFFERING_QUERY = groq`*[_type == "offering" && slug.current == $slu
   valuation,
   regulationType,
   projectedReturns,
+  minimumInvestment,
+  status,
   investorDocuments[]{
     _key,
     title,
@@ -94,6 +96,9 @@ export const OFFERINGS_QUERY = groq`*[_type == "offering" && defined(slug)] | or
   },
   valuation,
   regulationType,
+  projectedReturns,
+  minimumInvestment,
+  status,
 }`;
 
 // Slugs query (for static params)

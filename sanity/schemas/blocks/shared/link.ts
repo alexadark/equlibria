@@ -20,6 +20,8 @@ export default defineType({
         { type: 'post' },
         { type: 'project' },
         { type: 'projects-page' },
+        { type: 'blog-page' },
+        { type: 'offerings-page' },
         { type: 'category' },
       ],
       hidden: ({ parent }) => parent?.isExternal,

@@ -86,7 +86,8 @@ export default defineType({
       type: 'image',
       group: 'seo',
     }),
-    orderRankField({ type: 'industry' }),
+    // Temporarily disabled due to corruption - will regenerate when re-enabled
+    // orderRankField({ type: 'industry' }),
   ],
   preview: {
     select: {

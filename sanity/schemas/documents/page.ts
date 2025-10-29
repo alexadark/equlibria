@@ -64,6 +64,7 @@ export default defineType({
       type: 'image',
       group: 'seo',
     }),
-    orderRankField({ type: 'page' }),
+    // Temporarily disabled due to corruption - will regenerate when re-enabled
+    // orderRankField({ type: 'page' }),
   ],
 });

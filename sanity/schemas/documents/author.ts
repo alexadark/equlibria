@@ -29,7 +29,8 @@ export default defineType({
       type: 'image',
       fields: [altTextField],
     }),
-    orderRankField({ type: 'author' }),
+    // Temporarily disabled due to corruption - will regenerate when re-enabled
+    // orderRankField({ type: 'author' }),
   ],
   preview: {
     select: {

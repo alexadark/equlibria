@@ -29,7 +29,8 @@ export default defineType({
       type: 'number',
       validation: (rule) => rule.min(1).max(5),
     }),
-    orderRankField({ type: 'testimonial' }),
+    // Temporarily disabled due to corruption - will regenerate when re-enabled
+    // orderRankField({ type: 'testimonial' }),
   ],
 
   preview: {

@@ -3,117 +3,159 @@
 import { useState, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
-import { OfferingsFilter } from '@/components/ui/offerings-filter';
 import { urlFor } from '@/sanity/lib/image';
 import { stegaClean } from 'next-sanity';
-
-interface Offering {
-  companyName?: string;
-  slug?: {
-    current?: string;
-  };
-  logo?: any;
-  tagline?: string;
-  backgroundImage?: any;
-  industries?: Array<{
-    title?: string;
-    slug?: {
-      current?: string;
-    };
-  }>;
-  valuation?: string;
-  regulationType?: string;
-  minimumInvestment?: string;
-  geography?: string;
-  status?: string;
-}
-
-interface FilterOptions {
-  regulationType: string;
-  geography: string;
-  minInvestment: string;
-  status: string;
-}
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { OFFERINGS_BY_INDUSTRY_QUERYResult } from '@/sanity.types';
 
 interface FilterableOfferingsProps {
-  offerings: Offering[];
+  offerings: OFFERINGS_BY_INDUSTRY_QUERYResult;
   industryTitle: string;
-}
-
-// Parse minimum investment string to number for comparison
-function parseInvestmentAmount(investment?: string): number {
-  if (!investment) return 0;
-  // Remove $ and commas, then parse
-  const cleaned = investment.replace(/[$,]/g, '');
-  return parseInt(cleaned, 10) || 0;
 }
 
 export function FilterableOfferings({
   offerings,
   industryTitle,
 }: FilterableOfferingsProps) {
-  const [filters, setFilters] = useState<FilterOptions>({
-    regulationType: 'all',
-    geography: 'all',
-    minInvestment: 'all',
-    status: 'all',
-  });
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [regulationFilter, setRegulationFilter] = useState<string>('all');
+  const [geographyFilter, setGeographyFilter] = useState<string>('all');
 
+  // Extract unique values for filters
+  const { statuses, regulations, geographies } = useMemo(() => {
+    const statusSet = new Set<string>();
+    const regulationSet = new Set<string>();
+    const geographySet = new Set<string>();
+
+    offerings.forEach((offering) => {
+      if (offering?.status) statusSet.add(offering.status);
+      if (offering?.regulationType) regulationSet.add(offering.regulationType);
+      if (offering?.geography) geographySet.add(offering.geography);
+    });
+
+    return {
+      statuses: Array.from(statusSet).sort(),
+      regulations: Array.from(regulationSet).sort(),
+      geographies: Array.from(geographySet).sort(),
+    };
+  }, [offerings]);
+
+  // Filter offerings based on selected filters
   const filteredOfferings = useMemo(() => {
     return offerings.filter((offering) => {
-      // Filter by regulation type
-      if (
-        filters.regulationType &&
-        filters.regulationType !== 'all' &&
-        offering.regulationType !== filters.regulationType
-      ) {
-        return false;
-      }
+      const matchesStatus =
+        statusFilter === 'all' || offering?.status === statusFilter;
+      const matchesRegulation =
+        regulationFilter === 'all' ||
+        offering?.regulationType === regulationFilter;
+      const matchesGeography =
+        geographyFilter === 'all' || offering?.geography === geographyFilter;
 
-      // Filter by geography
-      if (
-        filters.geography &&
-        filters.geography !== 'all' &&
-        offering.geography !== filters.geography
-      ) {
-        return false;
-      }
-
-      // Filter by minimum investment
-      if (filters.minInvestment && filters.minInvestment !== 'all') {
-        const offeringAmount = parseInvestmentAmount(
-          offering.minimumInvestment
-        );
-        const filterAmount = parseInt(filters.minInvestment, 10);
-
-        if (filters.minInvestment === '100000+') {
-          // Over $100,000
-          if (offeringAmount <= 100000) return false;
-        } else {
-          // Up to specified amount
-          if (offeringAmount > filterAmount) return false;
-        }
-      }
-
-      // Filter by status
-      if (
-        filters.status &&
-        filters.status !== 'all' &&
-        offering.status !== filters.status
-      ) {
-        return false;
-      }
-
-      return true;
+      return matchesStatus && matchesRegulation && matchesGeography;
     });
-  }, [offerings, filters]);
+  }, [offerings, statusFilter, regulationFilter, geographyFilter]);
+
+  const hasActiveFilters =
+    statusFilter !== 'all' ||
+    regulationFilter !== 'all' ||
+    geographyFilter !== 'all';
+
+  const clearFilters = () => {
+    setStatusFilter('all');
+    setRegulationFilter('all');
+    setGeographyFilter('all');
+  };
 
   return (
-    <>
-      <OfferingsFilter onFilterChange={setFilters} />
+    <div>
+      {/* Filters */}
+      <div className="mb-8 flex flex-wrap items-center gap-4">
+        <div className="flex-1">
+          <p className="text-sm text-muted-foreground">
+            Showing {filteredOfferings.length} of {offerings.length} offerings
+            in {industryTitle}
+          </p>
+        </div>
 
-      {filteredOfferings && filteredOfferings.length > 0 ? (
+        <div className="flex flex-wrap gap-3">
+          {/* Status Filter */}
+          {statuses.length > 0 && (
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Statuses</SelectItem>
+                {statuses.map((status) => (
+                  <SelectItem key={status} value={status}>
+                    {status
+                      .split('-')
+                      .map(
+                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                      )
+                      .join(' ')}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+
+          {/* Regulation Filter */}
+          {regulations.length > 0 && (
+            <Select
+              value={regulationFilter}
+              onValueChange={setRegulationFilter}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter by regulation" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Regulations</SelectItem>
+                {regulations.map((regulation) => (
+                  <SelectItem key={regulation} value={regulation}>
+                    {regulation.toUpperCase()}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+
+          {/* Geography Filter */}
+          {geographies.length > 0 && (
+            <Select value={geographyFilter} onValueChange={setGeographyFilter}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Filter by geography" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Geographies</SelectItem>
+                {geographies.map((geography) => (
+                  <SelectItem key={geography} value={geography}>
+                    {geography}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+
+          {/* Clear Filters Button */}
+          {hasActiveFilters && (
+            <Button variant="outline" size="sm" onClick={clearFilters}>
+              Clear Filters
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Offerings Grid */}
+      {filteredOfferings.length > 0 ? (
         <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
           {filteredOfferings.map((offering) => (
             <Link
@@ -166,6 +208,28 @@ export function FilterableOfferings({
                   </p>
                 )}
 
+                {/* Status Badge */}
+                {offering?.status && (
+                  <div className="mb-4">
+                    <Badge
+                      variant={
+                        offering.status === 'open'
+                          ? 'default'
+                          : offering.status === 'closing-soon'
+                            ? 'destructive'
+                            : 'secondary'
+                      }
+                    >
+                      {offering.status
+                        .split('-')
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(' ')}
+                    </Badge>
+                  </div>
+                )}
+
                 {/* Industries */}
                 {offering?.industries && offering.industries.length > 0 && (
                   <div className="mb-4 flex flex-wrap gap-2">
@@ -178,7 +242,7 @@ export function FilterableOfferings({
                 )}
 
                 {/* Investment Details */}
-                <div className="grid grid-cols-2 gap-4 border-t pt-4">
+                <div className="space-y-3 border-t pt-4">
                   {offering?.valuation && (
                     <div>
                       <p className="text-xs text-muted-foreground">Valuation</p>
@@ -195,6 +259,22 @@ export function FilterableOfferings({
                       </p>
                     </div>
                   )}
+                  {offering?.minimumInvestment && (
+                    <div>
+                      <p className="text-xs text-muted-foreground">
+                        Minimum Investment
+                      </p>
+                      <p className="font-semibold">
+                        {offering.minimumInvestment}
+                      </p>
+                    </div>
+                  )}
+                  {offering?.geography && (
+                    <div>
+                      <p className="text-xs text-muted-foreground">Geography</p>
+                      <p className="text-sm">{offering.geography}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </Link>
@@ -202,11 +282,14 @@ export function FilterableOfferings({
         </div>
       ) : (
         <div className="py-12 text-center">
-          <p className="text-muted-foreground">
+          <p className="mb-4 text-muted-foreground">
             No offerings match your current filters.
           </p>
+          <Button variant="outline" onClick={clearFilters}>
+            Clear Filters
+          </Button>
         </div>
       )}
-    </>
+    </div>
   );
 }

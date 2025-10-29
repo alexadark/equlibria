@@ -153,6 +153,19 @@ export default async function OfferingPage(props: {
                 </Card>
               )}
 
+              {offering.geography && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Geography</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">
+                      {offering.geography}
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
               {offering.leadershipBios &&
                 offering.leadershipBios.length > 0 && (
                   <Card>
@@ -199,7 +212,7 @@ export default async function OfferingPage(props: {
 
             {/* Investment Details Tab */}
             <TabsContent value="investment" className="mt-6 space-y-6">
-              <div className="grid gap-6 md:grid-cols-3">
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {offering.valuation && (
                   <Card>
                     <CardHeader>
@@ -236,6 +249,34 @@ export default async function OfferingPage(props: {
                     <CardContent>
                       <p className="text-3xl font-bold">
                         {offering.projectedReturns}
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+                {offering.minimumInvestment && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-sm font-medium text-muted-foreground">
+                        Minimum Investment
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-3xl font-bold">
+                        {offering.minimumInvestment}
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+                {offering.status && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-sm font-medium text-muted-foreground">
+                        Status
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-3xl font-bold capitalize">
+                        {offering.status.replace(/-/g, ' ')}
                       </p>
                     </CardContent>
                   </Card>

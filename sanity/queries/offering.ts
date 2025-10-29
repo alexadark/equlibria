@@ -27,6 +27,7 @@ export const OFFERING_QUERY = groq`*[_type == "offering" && slug.current == $slu
     }
   },
   missionStatement,
+  geography,
   valuation,
   regulationType,
   projectedReturns,

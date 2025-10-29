@@ -10,6 +10,8 @@ import {
   Settings,
   FileText,
   Tag,
+  Factory,
+  Building2,
 } from 'lucide-react';
 
 export const structure = (S: any, context: any) =>
@@ -40,10 +42,26 @@ export const structure = (S: any, context: any) =>
             .title('Project')
             .defaultOrdering([{ field: '_createdAt', direction: 'desc' }])
         ),
+      S.listItem()
+        .title('Offerings')
+        .schemaType('offering')
+        .icon(Building2)
+        .child(
+          S.documentTypeList('offering')
+            .title('Offering')
+            .defaultOrdering([{ field: '_createdAt', direction: 'desc' }])
+        ),
       orderableDocumentListDeskItem({
         type: 'category',
         title: 'Categories',
         icon: BookA,
+        S,
+        context,
+      }),
+      orderableDocumentListDeskItem({
+        type: 'industry',
+        title: 'Industries',
+        icon: Factory,
         S,
         context,
       }),

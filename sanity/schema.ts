@@ -7,9 +7,11 @@ import projectsPage from './schemas/documents/projects-page';
 import blogPage from './schemas/documents/blog-page';
 import author from './schemas/documents/author';
 import category from './schemas/documents/category';
+import industry from './schemas/documents/industry';
 import galleryTag from './schemas/documents/gallery-tag';
 import faq from './schemas/documents/faq';
 import testimonial from './schemas/documents/testimonial';
+import offering from './schemas/documents/offering';
 import navigation from './schemas/documents/navigation';
 import settings from './schemas/documents/settings';
 
@@ -71,9 +73,11 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     blogPage,
     author,
     category,
+    industry,
     galleryTag,
     faq,
     testimonial,
+    offering,
     navigation,
     settings,
     // shared objects

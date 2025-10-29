@@ -18,6 +18,16 @@ import {
   CATEGORIES_SLUGS_QUERY,
 } from '@/sanity/queries/category';
 import {
+  INDUSTRY_QUERY,
+  INDUSTRIES_QUERY,
+  INDUSTRIES_SLUGS_QUERY,
+} from '@/sanity/queries/industry';
+import {
+  OFFERING_QUERY,
+  OFFERINGS_QUERY,
+  OFFERINGS_SLUGS_QUERY,
+} from '@/sanity/queries/offering';
+import {
   PAGE_QUERYResult,
   PAGES_SLUGS_QUERYResult,
   POST_QUERYResult,
@@ -29,6 +39,12 @@ import {
   PROJECTS_PAGE_QUERYResult,
   CATEGORY_QUERYResult,
   CATEGORIES_SLUGS_QUERYResult,
+  INDUSTRY_QUERYResult,
+  INDUSTRIES_QUERYResult,
+  INDUSTRIES_SLUGS_QUERYResult,
+  OFFERING_QUERYResult,
+  OFFERINGS_QUERYResult,
+  OFFERINGS_SLUGS_QUERYResult,
   NAVIGATION_QUERYResult,
   SETTINGS_QUERYResult,
 } from '@/sanity.types';
@@ -164,6 +180,72 @@ export const fetchSanityCategoriesStaticParams =
   async (): Promise<CATEGORIES_SLUGS_QUERYResult> => {
     const { data } = await sanityFetch({
       query: CATEGORIES_SLUGS_QUERY,
+      perspective: 'published',
+      stega: false,
+    });
+
+    return data;
+  };
+
+export const fetchSanityIndustries =
+  async (): Promise<INDUSTRIES_QUERYResult> => {
+    const { data } = await sanityFetch({
+      query: INDUSTRIES_QUERY,
+    });
+
+    return data;
+  };
+
+export const fetchSanityIndustryBySlug = async ({
+  slug,
+}: {
+  slug: string;
+}): Promise<INDUSTRY_QUERYResult> => {
+  const { data } = await sanityFetch({
+    query: INDUSTRY_QUERY,
+    params: { slug },
+  });
+
+  return data;
+};
+
+export const fetchSanityIndustriesStaticParams =
+  async (): Promise<INDUSTRIES_SLUGS_QUERYResult> => {
+    const { data } = await sanityFetch({
+      query: INDUSTRIES_SLUGS_QUERY,
+      perspective: 'published',
+      stega: false,
+    });
+
+    return data;
+  };
+
+export const fetchSanityOfferings =
+  async (): Promise<OFFERINGS_QUERYResult> => {
+    const { data } = await sanityFetch({
+      query: OFFERINGS_QUERY,
+    });
+
+    return data;
+  };
+
+export const fetchSanityOfferingBySlug = async ({
+  slug,
+}: {
+  slug: string;
+}): Promise<OFFERING_QUERYResult> => {
+  const { data } = await sanityFetch({
+    query: OFFERING_QUERY,
+    params: { slug },
+  });
+
+  return data;
+};
+
+export const fetchSanityOfferingsStaticParams =
+  async (): Promise<OFFERINGS_SLUGS_QUERYResult> => {
+    const { data } = await sanityFetch({
+      query: OFFERINGS_SLUGS_QUERY,
       perspective: 'published',
       stega: false,
     });

@@ -28,23 +28,28 @@ export function FilterableOfferings({
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [regulationFilter, setRegulationFilter] = useState<string>('all');
   const [geographyFilter, setGeographyFilter] = useState<string>('all');
+  const [minInvestmentFilter, setMinInvestmentFilter] = useState<string>('all');
 
   // Extract unique values for filters
-  const { statuses, regulations, geographies } = useMemo(() => {
+  const { statuses, regulations, geographies, minInvestments } = useMemo(() => {
     const statusSet = new Set<string>();
     const regulationSet = new Set<string>();
     const geographySet = new Set<string>();
+    const minInvestmentSet = new Set<string>();
 
     offerings.forEach((offering) => {
       if (offering?.status) statusSet.add(offering.status);
       if (offering?.regulationType) regulationSet.add(offering.regulationType);
       if (offering?.geography) geographySet.add(offering.geography);
+      if (offering?.minimumInvestment)
+        minInvestmentSet.add(offering.minimumInvestment);
     });
 
     return {
       statuses: Array.from(statusSet).sort(),
       regulations: Array.from(regulationSet).sort(),
       geographies: Array.from(geographySet).sort(),
+      minInvestments: Array.from(minInvestmentSet).sort(),
     };
   }, [offerings]);
 
@@ -58,20 +63,36 @@ export function FilterableOfferings({
         offering?.regulationType === regulationFilter;
       const matchesGeography =
         geographyFilter === 'all' || offering?.geography === geographyFilter;
+      const matchesMinInvestment =
+        minInvestmentFilter === 'all' ||
+        offering?.minimumInvestment === minInvestmentFilter;
 
-      return matchesStatus && matchesRegulation && matchesGeography;
+      return (
+        matchesStatus &&
+        matchesRegulation &&
+        matchesGeography &&
+        matchesMinInvestment
+      );
     });
-  }, [offerings, statusFilter, regulationFilter, geographyFilter]);
+  }, [
+    offerings,
+    statusFilter,
+    regulationFilter,
+    geographyFilter,
+    minInvestmentFilter,
+  ]);
 
   const hasActiveFilters =
     statusFilter !== 'all' ||
     regulationFilter !== 'all' ||
-    geographyFilter !== 'all';
+    geographyFilter !== 'all' ||
+    minInvestmentFilter !== 'all';
 
   const clearFilters = () => {
     setStatusFilter('all');
     setRegulationFilter('all');
     setGeographyFilter('all');
+    setMinInvestmentFilter('all');
   };
 
   return (
@@ -90,10 +111,10 @@ export function FilterableOfferings({
           {statuses.length > 0 && (
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filter by status" />
+                <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="all">Status</SelectItem>
                 {statuses.map((status) => (
                   <SelectItem key={status} value={status}>
                     {status
@@ -115,10 +136,10 @@ export function FilterableOfferings({
               onValueChange={setRegulationFilter}
             >
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filter by regulation" />
+                <SelectValue placeholder="Regulation" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Regulations</SelectItem>
+                <SelectItem value="all">Regulation</SelectItem>
                 {regulations.map((regulation) => (
                   <SelectItem key={regulation} value={regulation}>
                     {regulation.toUpperCase()}
@@ -132,13 +153,33 @@ export function FilterableOfferings({
           {geographies.length > 0 && (
             <Select value={geographyFilter} onValueChange={setGeographyFilter}>
               <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Filter by geography" />
+                <SelectValue placeholder="Geography" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Geographies</SelectItem>
+                <SelectItem value="all">Geography</SelectItem>
                 {geographies.map((geography) => (
                   <SelectItem key={geography} value={geography}>
                     {geography}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+
+          {/* Minimum Investment Filter */}
+          {minInvestments.length > 0 && (
+            <Select
+              value={minInvestmentFilter}
+              onValueChange={setMinInvestmentFilter}
+            >
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Minimum Investment" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Minimum Investment</SelectItem>
+                {minInvestments.map((minInvestment) => (
+                  <SelectItem key={minInvestment} value={minInvestment}>
+                    {minInvestment}
                   </SelectItem>
                 ))}
               </SelectContent>

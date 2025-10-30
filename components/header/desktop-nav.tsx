@@ -13,7 +13,7 @@ import {
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
 import * as LucideIcons from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 type SanityLink = NonNullable<NAVIGATION_QUERYResult[0]['links']>[number];
 type SanitySubItem = NonNullable<SanityLink['subItems']>[number];
@@ -25,6 +25,7 @@ export default function DesktopNav({
   navigation: NAVIGATION_QUERYResult;
   menuPosition?: 'left' | 'center' | 'right';
 }) {
+  const pathname = usePathname();
   const positionClasses = {
     left: 'justify-start',
     center: 'justify-center flex-1',
@@ -46,9 +47,10 @@ export default function DesktopNav({
               navItem?.subItems &&
               navItem.subItems.length > 0
             ) {
+              const isActive = navItem.href === pathname || navItem.subItems.some(subItem => subItem.href === pathname);
               return (
                 <NavigationMenuItem key={navItem._key}>
-                  <DropdownTrigger navItem={navItem} />
+                  <DropdownTrigger navItem={navItem} isActive={isActive} />
                   <NavigationMenuContent>
                     <div className="grid w-[400px] gap-3 p-4">
                       {navItem.subItems.map((subItem) => (
@@ -60,12 +62,18 @@ export default function DesktopNav({
               );
             }
 
+            const isActive = navItem?.href === pathname;
             return navItem?.href ? (
               <NavigationMenuItem key={navItem._key}>
                 <NavigationMenuLink asChild>
                   <Link
                     href={navItem.href}
-                    className="bg-background hover:bg-purple-600 group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-xs font-semibold uppercase text-black hover:text-white dark:text-white dark:hover:text-white dark:hover:bg-purple-600 transition-colors"
+                    className={cn(
+                      "group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-xs font-semibold uppercase transition-colors",
+                      isActive
+                        ? "bg-purple-600 text-white hover:bg-purple-600 hover:text-white"
+                        : "bg-background text-black hover:bg-purple-600 hover:text-white dark:text-white dark:hover:text-white dark:hover:bg-purple-600"
+                    )}
                     target={navItem.target ? '_blank' : undefined}
                     rel={navItem.target ? 'noopener noreferrer' : undefined}
                   >
@@ -81,7 +89,7 @@ export default function DesktopNav({
   );
 }
 
-function DropdownTrigger({ navItem }: { navItem: SanityLink }) {
+function DropdownTrigger({ navItem, isActive }: { navItem: SanityLink; isActive: boolean }) {
   const router = useRouter();
 
   const handleClick = (e: React.MouseEvent) => {
@@ -97,7 +105,15 @@ function DropdownTrigger({ navItem }: { navItem: SanityLink }) {
   };
 
   return (
-    <NavigationMenuTrigger className="bg-background hover:bg-purple-600 text-xs font-semibold uppercase text-black hover:text-white dark:text-white dark:hover:text-white dark:hover:bg-purple-600" onClick={handleClick}>
+    <NavigationMenuTrigger
+      className={cn(
+        "text-xs font-semibold uppercase",
+        isActive
+          ? "bg-purple-600 text-white hover:bg-purple-600 hover:text-white"
+          : "bg-background text-black hover:bg-purple-600 hover:text-white dark:text-white dark:hover:text-white dark:hover:bg-purple-600"
+      )}
+      onClick={handleClick}
+    >
       {navItem.title}
     </NavigationMenuTrigger>
   );

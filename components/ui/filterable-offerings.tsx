@@ -25,42 +25,44 @@ export function FilterableOfferings({
   offerings,
   industryTitle,
 }: FilterableOfferingsProps) {
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [regulationFilter, setRegulationFilter] = useState<string>('all');
+  const [availabilityFilter, setAvailabilityFilter] = useState<string>('all');
+  const [offeringTypeFilter, setOfferingTypeFilter] = useState<string>('all');
   const [geographyFilter, setGeographyFilter] = useState<string>('all');
   const [minInvestmentFilter, setMinInvestmentFilter] = useState<string>('all');
 
   // Extract unique values for filters
-  const { statuses, regulations, geographies, minInvestments } = useMemo(() => {
-    const statusSet = new Set<string>();
-    const regulationSet = new Set<string>();
-    const geographySet = new Set<string>();
-    const minInvestmentSet = new Set<string>();
+  const { availabilities, offeringTypes, geographies, minInvestments } =
+    useMemo(() => {
+      const availabilitySet = new Set<string>();
+      const offeringTypeSet = new Set<string>();
+      const geographySet = new Set<string>();
+      const minInvestmentSet = new Set<string>();
 
-    offerings.forEach((offering) => {
-      if (offering?.status) statusSet.add(offering.status);
-      if (offering?.regulationType) regulationSet.add(offering.regulationType);
-      if (offering?.geography) geographySet.add(offering.geography);
-      if (offering?.minimumInvestment)
-        minInvestmentSet.add(offering.minimumInvestment);
-    });
+      offerings.forEach((offering) => {
+        if (offering?.status) availabilitySet.add(offering.status);
+        if (offering?.regulationType)
+          offeringTypeSet.add(offering.regulationType);
+        if (offering?.geography) geographySet.add(offering.geography);
+        if (offering?.minimumInvestment)
+          minInvestmentSet.add(offering.minimumInvestment);
+      });
 
-    return {
-      statuses: Array.from(statusSet).sort(),
-      regulations: Array.from(regulationSet).sort(),
-      geographies: Array.from(geographySet).sort(),
-      minInvestments: Array.from(minInvestmentSet).sort(),
-    };
-  }, [offerings]);
+      return {
+        availabilities: Array.from(availabilitySet).sort(),
+        offeringTypes: Array.from(offeringTypeSet).sort(),
+        geographies: Array.from(geographySet).sort(),
+        minInvestments: Array.from(minInvestmentSet).sort(),
+      };
+    }, [offerings]);
 
   // Filter offerings based on selected filters
   const filteredOfferings = useMemo(() => {
     return offerings.filter((offering) => {
-      const matchesStatus =
-        statusFilter === 'all' || offering?.status === statusFilter;
-      const matchesRegulation =
-        regulationFilter === 'all' ||
-        offering?.regulationType === regulationFilter;
+      const matchesAvailability =
+        availabilityFilter === 'all' || offering?.status === availabilityFilter;
+      const matchesOfferingType =
+        offeringTypeFilter === 'all' ||
+        offering?.regulationType === offeringTypeFilter;
       const matchesGeography =
         geographyFilter === 'all' || offering?.geography === geographyFilter;
       const matchesMinInvestment =
@@ -68,29 +70,29 @@ export function FilterableOfferings({
         offering?.minimumInvestment === minInvestmentFilter;
 
       return (
-        matchesStatus &&
-        matchesRegulation &&
+        matchesAvailability &&
+        matchesOfferingType &&
         matchesGeography &&
         matchesMinInvestment
       );
     });
   }, [
     offerings,
-    statusFilter,
-    regulationFilter,
+    availabilityFilter,
+    offeringTypeFilter,
     geographyFilter,
     minInvestmentFilter,
   ]);
 
   const hasActiveFilters =
-    statusFilter !== 'all' ||
-    regulationFilter !== 'all' ||
+    availabilityFilter !== 'all' ||
+    offeringTypeFilter !== 'all' ||
     geographyFilter !== 'all' ||
     minInvestmentFilter !== 'all';
 
   const clearFilters = () => {
-    setStatusFilter('all');
-    setRegulationFilter('all');
+    setAvailabilityFilter('all');
+    setOfferingTypeFilter('all');
     setGeographyFilter('all');
     setMinInvestmentFilter('all');
   };
@@ -107,42 +109,20 @@ export function FilterableOfferings({
         </div>
 
         <div className="flex flex-wrap gap-3">
-          {/* Status Filter */}
-          {statuses.length > 0 && (
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Status</SelectItem>
-                {statuses.map((status) => (
-                  <SelectItem key={status} value={status}>
-                    {status
-                      .split('-')
-                      .map(
-                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
-                      )
-                      .join(' ')}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
-
-          {/* Regulation Filter */}
-          {regulations.length > 0 && (
+          {/* Offering Type Filter */}
+          {offeringTypes.length > 0 && (
             <Select
-              value={regulationFilter}
-              onValueChange={setRegulationFilter}
+              value={offeringTypeFilter}
+              onValueChange={setOfferingTypeFilter}
             >
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Regulation" />
+                <SelectValue placeholder="Offering Type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Regulation</SelectItem>
-                {regulations.map((regulation) => (
-                  <SelectItem key={regulation} value={regulation}>
-                    {regulation.toUpperCase()}
+                <SelectItem value="all">Offering Type</SelectItem>
+                {offeringTypes.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type.toUpperCase()}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -166,20 +146,45 @@ export function FilterableOfferings({
             </Select>
           )}
 
-          {/* Minimum Investment Filter */}
+          {/* Min Investment Filter */}
           {minInvestments.length > 0 && (
             <Select
               value={minInvestmentFilter}
               onValueChange={setMinInvestmentFilter}
             >
               <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Minimum Investment" />
+                <SelectValue placeholder="Min Investment" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Minimum Investment</SelectItem>
+                <SelectItem value="all">Min Investment</SelectItem>
                 {minInvestments.map((minInvestment) => (
                   <SelectItem key={minInvestment} value={minInvestment}>
                     {minInvestment}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+
+          {/* Availability Filter */}
+          {availabilities.length > 0 && (
+            <Select
+              value={availabilityFilter}
+              onValueChange={setAvailabilityFilter}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Availability" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Availability</SelectItem>
+                {availabilities.map((availability) => (
+                  <SelectItem key={availability} value={availability}>
+                    {availability
+                      .split('-')
+                      .map(
+                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                      )
+                      .join(' ')}
                   </SelectItem>
                 ))}
               </SelectContent>

@@ -34,6 +34,10 @@ export default defineType({
       title: 'Documents',
     },
     {
+      name: 'cta',
+      title: 'CTA',
+    },
+    {
       name: 'seo',
       title: 'SEO',
     },
@@ -313,6 +317,30 @@ export default defineType({
           ],
         },
       ],
+    }),
+
+    // CTA Tab Fields
+    defineField({
+      name: 'investNowUrl',
+      title: 'Invest Now Button URL',
+      type: 'url',
+      group: 'cta',
+      description: 'URL for the "Invest Now" button (e.g., link to investment platform)',
+      validation: (Rule) =>
+        Rule.uri({
+          scheme: ['http', 'https', 'mailto', 'tel'],
+        }),
+    }),
+    defineField({
+      name: 'tradeOnMarketUrl',
+      title: 'Trade on Market Button URL',
+      type: 'url',
+      group: 'cta',
+      description: 'URL for the "Trade on Market" button (e.g., link to secondary market)',
+      validation: (Rule) =>
+        Rule.uri({
+          scheme: ['http', 'https', 'mailto', 'tel'],
+        }),
     }),
 
     // Settings

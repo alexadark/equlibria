@@ -61,6 +61,8 @@ export const OFFERING_QUERY = groq`*[_type == "offering" && slug.current == $slu
       size
     }
   },
+  investNowUrl,
+  tradeOnMarketUrl,
   _createdAt,
   _updatedAt,
   meta_title,

@@ -10,7 +10,7 @@ import Image from 'next/image';
 import PortableTextRenderer from '@/components/portable-text-renderer';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
+import { Download, TrendingUp, Wallet } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
@@ -436,6 +436,41 @@ export default async function OfferingPage(props: {
               </Card>
             </TabsContent>
           </Tabs>
+
+          {/* CTA Buttons */}
+          {(offering.investNowUrl || offering.tradeOnMarketUrl) && (
+            <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
+              {offering.investNowUrl && (
+                <Button size="lg" className="w-full sm:w-auto" asChild>
+                  <a
+                    href={offering.investNowUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Wallet className="mr-2 h-5 w-5" />
+                    Invest Now
+                  </a>
+                </Button>
+              )}
+              {offering.tradeOnMarketUrl && (
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                  asChild
+                >
+                  <a
+                    href={offering.tradeOnMarketUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <TrendingUp className="mr-2 h-5 w-5" />
+                    Trade on Market
+                  </a>
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </section>
     </div>

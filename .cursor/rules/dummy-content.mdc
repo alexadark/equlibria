@@ -188,6 +188,35 @@ Sanity automatically fetches placeholder images on import!
 }
 ```
 
+### Section Padding (CRITICAL)
+
+**⚠️ ALWAYS use this format for padding fields:**
+
+```json
+{
+  "padding": {
+    "top": true,
+    "bottom": true
+  }
+}
+```
+
+**Common Padding Patterns:**
+
+- Default padding (both): `{"top": true, "bottom": true}`
+- Top only: `{"top": true, "bottom": false}`
+- Bottom only: `{"top": false, "bottom": true}`
+- No padding: `{"top": false, "bottom": false}`
+
+**❌ NEVER use string values:**
+
+```json
+// WRONG - Will cause validation errors
+"padding": "default"
+"padding": "lg"
+"padding": "none"
+```
+
 ### Portable Text (Rich Content)
 
 ```json
@@ -348,6 +377,7 @@ Before delivering, verify:
 
 - [ ] One JSON object per line (NDJSON format)
 - [ ] All required fields present
+- [ ] **Padding fields use object format: `{"top": true, "bottom": true}`**
 - [ ] Realistic content (no placeholders)
 - [ ] Unique IDs and keys
 - [ ] Valid date formats (ISO 8601)

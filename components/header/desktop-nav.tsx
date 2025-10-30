@@ -34,7 +34,7 @@ export default function DesktopNav({
   return (
     <div
       className={cn(
-        'hidden xl:flex items-center gap-7 text-primary',
+        'hidden xl:flex items-center gap-7',
         positionClasses[menuPosition]
       )}
     >
@@ -65,7 +65,7 @@ export default function DesktopNav({
                 <NavigationMenuLink asChild>
                   <Link
                     href={navItem.href}
-                    className="bg-background hover:bg-muted hover:text-accent-foreground group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors"
+                    className="bg-background hover:bg-purple-600 group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-xs font-semibold uppercase text-black hover:text-white dark:text-white dark:hover:text-white dark:hover:bg-purple-600 transition-colors"
                     target={navItem.target ? '_blank' : undefined}
                     rel={navItem.target ? 'noopener noreferrer' : undefined}
                   >
@@ -97,7 +97,7 @@ function DropdownTrigger({ navItem }: { navItem: SanityLink }) {
   };
 
   return (
-    <NavigationMenuTrigger className="bg-background" onClick={handleClick}>
+    <NavigationMenuTrigger className="bg-background hover:bg-purple-600 text-xs font-semibold uppercase text-black hover:text-white dark:text-white dark:hover:text-white dark:hover:bg-purple-600" onClick={handleClick}>
       {navItem.title}
     </NavigationMenuTrigger>
   );
